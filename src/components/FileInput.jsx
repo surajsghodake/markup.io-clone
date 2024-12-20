@@ -40,7 +40,7 @@ const FileInput = () => {
           placeholder="Enter a URL here"
           aria-label="Search"
           style={{ width: "500px" }}
-          onFocus={true}
+          // onFocus={true}
         />
         <button className="btn btn-outline-primary mx-3 px-4" type="submit">
           Go

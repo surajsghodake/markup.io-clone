@@ -1,53 +1,62 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { postActions } from "../store/postSlice";
 
-const MarkModal = ({ onAddAnnotation, inputRef }) => {
+const MarkModal = ({ onAddAnnotation, inputRef, position, setPosition }) => {
   const dispatch = useDispatch();
   const all_posts = useSelector((state) => state.post);
   const postId = useParams();
+  const modalRef = useRef();
 
-  // const inputRef = useRef(null);
+  console.log(position);
 
   const post = all_posts.find((e) => String(e.id) === postId.postId);
 
+  useEffect(() => {
+    if (post?.modalStatus && inputRef?.current) {
+      inputRef.current.focus();
+    }
+  }, [post?.modalStatus, inputRef]);
+
   const lastClick =
-    post.clicks.length > 0 && post.clicks[post.clicks.length - 1];
-  // : { x: "50%", y: "50%" };
+    position.length > 0
+      ? position[position.length - 1]
+      : { x: "50%", y: "50%" };
 
   const handleClose = () => {
+    if (position.length > post.annotations.length) {
+      setPosition(position.slice(0, -1));
+    }
     dispatch(
       postActions.changeModalStatus({ id: postId.postId, status: false })
     );
   };
 
-  // useEffect(() => {
-  //   if (inputRef.current) {
-  //     inputRef.current.focus();
-  //   }
-  // }, []);
+  const handleClickOutside = (e) => {
+    console.log(modalRef.current);
 
-  // const handleAddAnnotation = () => {
-  //   if (inputRef.current.value.trim().length > 0) {
-  //     dispatch(
-  //       postActions.addAnnotation({
-  //         id: postId.postId,
-  //         annotation: inputRef.current.value,
-  //       })
-  //     );
-  //   }
-  //   // handleSetAnnotationsStatus();
+    if (modalRef.current && !modalRef.current.contains(e.target)) {
+      handleClose();
+    }
+  };
 
-  //   dispatch(
-  //     postActions.changeModalStatus({ id: postId.postId, status: false })
-  //   );
+  useEffect(() => {
+    if (post?.modalStatus) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
 
-  //   inputRef.current.value = "";
-  // };
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [post?.modalStatus]);
+
   return (
     <div style={{}}>
       <div
+        ref={modalRef}
         style={{
           position: "absolute",
           top:
@@ -78,7 +87,6 @@ const MarkModal = ({ onAddAnnotation, inputRef }) => {
           type="text"
           placeholder="Enter your annotation here"
           className="w-100"
-          onFocus={true}
         />
         <div className="mt-2 d-flex justify-content-end"></div>
         <button

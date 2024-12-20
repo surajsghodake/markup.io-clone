@@ -13,31 +13,13 @@ const PostDisplay = () => {
   // console.log(post);
 
   const elementRef = useRef();
+  const inputRef = useRef();
 
-  const [annotationstatus, setAnnotationStatus] = useState(false);
-
-  useEffect(() => {
-    setAnnotationStatus(false);
-  }, []);
-
-  const handleSetAnnotationsStatus = () => {
-    return setAnnotationStatus(true);
-  };
-
-  const [position, setPosition] = useState(post.clicks);
+  const [position, setPosition] = useState(post?.clicks || []);
   // console.log(position);
 
   const handleClick = (event) => {
     if (position.length === post.annotations.length) {
-      if (position.length > post.annotations.length) {
-        console.log("copy");
-        let copy = position.pop();
-        setPosition(copy);
-
-        dispatch(
-          postActions.changeModalStatus({ id: postId.postId, status: false })
-        );
-      }
       const rect = elementRef.current.getBoundingClientRect();
       setPosition([
         ...position,
@@ -48,18 +30,10 @@ const PostDisplay = () => {
       ]);
     }
 
-    // const x = event.clientX - rect.left; // X relative to the element
-    // const y = event.clientY - rect.top; // Y relative to the element
-    // console.log(`Clicked within element: X=${x}, Y=${y}`);
-    // if (annotationstatus === true) {
-
-    // }
     dispatch(
       postActions.changeModalStatus({ id: postId.postId, status: true })
     );
   };
-
-  const inputRef = useRef();
 
   //
   const handleAddAnnotation = () => {
@@ -67,7 +41,7 @@ const PostDisplay = () => {
       dispatch(
         postActions.addAnnotation({
           id: postId.postId,
-          annotation: inputRef.current.value,
+          annotation: inputRef.current.value.trim(),
         })
       );
       dispatch(
@@ -77,7 +51,6 @@ const PostDisplay = () => {
         })
       );
     }
-    // handleSetAnnotationsStatus();
 
     dispatch(
       postActions.changeModalStatus({ id: postId.postId, status: false })
@@ -120,10 +93,10 @@ const PostDisplay = () => {
         </div>
       ))}
       <MarkModal
-        // handleSetAnnotationsStatus={handleSetAnnotationsStatus}
         onAddAnnotation={handleAddAnnotation}
         inputRef={inputRef}
-        className={``}
+        position={position}
+        setPosition={setPosition}
       />
     </div>
   );
