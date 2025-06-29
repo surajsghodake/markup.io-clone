@@ -9,9 +9,9 @@ const postSlice = createSlice({
         id: action.payload.id,
         name: action.payload.name,
         img: action.payload.img,
-        clicks: [],
+        clicks: { active: [], resolved: [] },
         modalStatus: false,
-        annotations: [],
+        annotations: { active: [], resolved: [] },
       });
     },
     addClickPositions: (state, action) => {
@@ -19,7 +19,7 @@ const postSlice = createSlice({
 
       const post = state.find((e) => String(e.id) === action.payload.id);
       if (post) {
-        post.clicks.push(action.payload.position);
+        post.clicks.active.push(action.payload.position);
       }
     },
     changeModalStatus: (state, action) => {
@@ -31,8 +31,34 @@ const postSlice = createSlice({
     addAnnotation: (state, action) => {
       const post = state.find((e) => String(e.id) === action.payload.id);
       if (post) {
-        if (!post.annotations.includes(action.payload.annotation)) {
-          post.annotations.push(action.payload.annotation);
+        if (!post.annotations.active.includes(action.payload.annotation)) {
+          post.annotations.active.push(action.payload.annotation);
+        }
+      }
+    },
+    handleResolved: (state, action) => {
+      const post = state.find((e) => String(e.id) === action.payload.id);
+      if (post && action.payload.activeTab === "active") {
+        if (post.annotations.active.includes(action.payload.annotation)) {
+          post.annotations.active.splice(
+            post.annotations.active.indexOf(action.payload.annotation),
+            1
+          );
+          if (!post.annotations.resolved.includes(action.payload.annotation)) {
+            post.annotations.resolved.push(action.payload.annotation);
+          }
+        }
+      }
+
+      if (post && action.payload.activeTab === "resolved") {
+        if (post.annotations.resolved.includes(action.payload.annotation)) {
+          post.annotations.resolved.splice(
+            post.annotations.resolved.indexOf(action.payload.annotation),
+            1
+          );
+          if (!post.annotations.active.includes(action.payload.annotation)) {
+            post.annotations.active.push(action.payload.annotation);
+          }
         }
       }
     },

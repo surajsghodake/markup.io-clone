@@ -25,12 +25,13 @@ const MarkModal = ({ onAddAnnotation, inputRef, position, setPosition }) => {
       : { x: "50%", y: "50%" };
 
   const handleClose = () => {
-    if (position.length > post.annotations.length) {
+    if (position.length > post.annotations.active.length) {
       setPosition(position.slice(0, -1));
     }
     dispatch(
       postActions.changeModalStatus({ id: postId.postId, status: false })
     );
+    inputRef.current.value = "";
   };
 
   const handleClickOutside = (e) => {
@@ -65,7 +66,7 @@ const MarkModal = ({ onAddAnnotation, inputRef, position, setPosition }) => {
             typeof lastClick.x === "number" ? `${lastClick.x}px` : lastClick.x,
           // transform: "translate(50%, 50%)",
           width: 300,
-          height: 150,
+          height: 100,
           backgroundColor: "white",
           borderRadius: "15px",
           padding: "10px 20px",
@@ -74,21 +75,14 @@ const MarkModal = ({ onAddAnnotation, inputRef, position, setPosition }) => {
           zIndex: "10",
         }}
       >
-        <label htmlFor="comment">Add Annotation</label>
-        <button
-          type="button"
-          className="btn-close float-end"
-          aria-label="Close"
-          onClick={handleClose}
-        ></button>
-        <hr />
         <input
           ref={inputRef}
           type="text"
           placeholder="Enter your annotation here"
-          className="w-100"
+          className="w-100 mt-2"
         />
         <div className="mt-2 d-flex justify-content-end"></div>
+
         <button
           className="btn btn-primary btn-sm me-2"
           type="button"

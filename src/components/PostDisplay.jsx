@@ -10,16 +10,16 @@ const PostDisplay = () => {
   const postId = useParams();
 
   const post = all_posts.find((e) => String(e.id) === postId.postId);
-  // console.log(post);
+  console.log(post);
 
   const elementRef = useRef();
   const inputRef = useRef();
 
-  const [position, setPosition] = useState(post?.clicks || []);
+  const [position, setPosition] = useState(post?.clicks.active || []);
   // console.log(position);
 
   const handleClick = (event) => {
-    if (position.length === post.annotations.length) {
+    if (position.length === post.annotations.active.length) {
       const rect = elementRef.current.getBoundingClientRect();
       setPosition([
         ...position,
